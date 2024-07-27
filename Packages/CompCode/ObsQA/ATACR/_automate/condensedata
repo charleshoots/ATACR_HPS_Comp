@@ -1,0 +1,25 @@
+def condensedata(input):
+        collect = pd.DataFrame()
+        for data in input:
+                if isinstance(data,pd.DataFrame):
+                        key = np.append(np.array(data.keys()[np.array(np.where(data.keys()=='channel')).flatten().tolist()]),np.array(data.keys()[np.array(np.where(data.keys()=='label')).flatten().tolist()]))[0]
+                        labels = list(data[key])
+                        if len(np.flatnonzero(np.core.defchararray.find(labels,'Z')!=-1))==1:
+                                # isPreProc
+                                data = data.rename(columns={'channel': 'label'})[['Trace','Network','Station','label','File']].copy().iloc[np.where(data[key]=='BHZ')]
+                                data['State'] = 'PreProc'
+                                data['CodeBase'] = 'Matlab'
+                        else:
+                                # isCorrected
+                                data = data[['Trace','Network','Station','label','File']].copy()
+                                data['State'] = 'Corrected'
+                                data['CodeBase'] = 'Matlab'
+                elif isinstance(data,obstools.atacr.classes.EventStream):
+                        d1 = pd.DataFrame.from_dict({'Trace':data.trZ,'Network':data.trZ.stats.network,'Station':data.trZ.stats.station,'label':data.trZ.stats.channel,'File':data.prefix,'State':'PreProc','CodeBase':'Python'},orient='index').T
+                        d2 = pd.DataFrame.from_dict({'Trace':list(evstream.correct.values()),'Network':data.trZ.stats.network,'Station':data.trZ.stats.station,'label':list(data.correct.keys()),'File':data.prefix,'State':'Corrected','CodeBase':'Python'})
+                        data = pd.concat([d1,d2])
+                collect = pd.concat([collect,data]).sort_values(by=['CodeBase'])
+        return collect
+#### \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+#### ---------------------------------------------------------------------------------------------------------------------------------------------------
+#### ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

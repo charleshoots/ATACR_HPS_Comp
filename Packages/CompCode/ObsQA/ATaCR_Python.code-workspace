@@ -1,0 +1,33 @@
+{
+	"folders": [
+		{
+			"path": "../../METHODS/ATaCR/ATaCR_Python"
+		},
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../Notebooks"
+		}
+	],
+	"settings": {
+		"workbench.colorCustomizations": {
+			"activityBar.background": "#818be2",
+			"titleBar.activeBackground": "#818be2",
+			"titleBar.activeForeground": "#FFFFFF",
+			"titleBar.inactiveBackground": "#818be2",
+			"titleBar.inactiveForeground": "#FFFFFF",
+			"titleBar.border": "#818be2",
+			"activityBar.foreground": "#FFFFFF",
+			"statusBar.background": "#818be2",
+			"statusBar.foreground": "#FFFFFF",
+			"statusBar.debuggingBackground": "#818be2",
+			"statusBar.debuggingForeground": "#FFFFFF",
+			"tab.activeBorder": "#818be2",
+			"iLoveWorkSpaceColors": true,
+			"iLoveWorkSpaceRandom": false
+		},
+		"editor.autoIndent": "none",
+		"editor.tabSize": 2
+	}
+}
