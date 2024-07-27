@@ -72,7 +72,7 @@ def audit_events(eventsfolder,Minmag=6.0,Maxmag=7.0):
 #### \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #### ---------------------------------------------------------------------------------------------------------------------------------------------------
 #### ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-def get_ATACR_HPS_Comp(d,atacr_TFs_used='ZP-21', win_length=200):
+def get_ATACR_HPS_Comp(d,atacr_TFs_used='ZP-21', win_length=163.84):
         RawP = d.Raw[0]['trP'].copy()
         RawZ = d.Raw[0]['trZ'].copy()
         PostATACR = d.Corrected[0][atacr_TFs_used].copy()
@@ -478,7 +478,7 @@ def get_noisecut_output(net,sta,event,noisecut_datafolder):
                 st.Raw[0][i].stats.location = 'Raw'
         return st
   
-def get_noisecut_event(parentfolder,staname,event,channel=['*1','*2','*Z','*H'],len_hrs=2,pre_trim=False,post_trim=True,win_length=200,width=None):
+def get_noisecut_event(parentfolder,staname,event,channel=['*1','*2','*Z','*H'],len_hrs=2,pre_trim=False,post_trim=True,win_length=163.84,width=None):
         # event_dt = 22  #<--This isn't necessary
         dateformat = '%Y.%j.%H.%M'
         event = UTCDateTime.strptime(str(event),dateformat)
@@ -509,7 +509,7 @@ def get_noisecut_event(parentfolder,staname,event,channel=['*1','*2','*Z','*H'],
         out = pd.DataFrame({'Event':event,'Network':staname.split('.')[0],'Station':staname.split('.')[1],'Raw':[raw_collect],'Corrected':[corrected_collect],'Spectrograms':[hps_spectrograms]})
         return out
 
-def run_noisecut(tr,win_length=200,width=None):
+def run_noisecut(tr,win_length=163.84,width=None):
         hps, (S_full, S_background, S_hps, frequencies, times) = noisecut(tr, ret_spectrograms=True,win_length=win_length,width=width)
         return hps, (S_full, S_background, S_hps, frequencies, times)
 
