@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"name": "ATaCR",
+			"path": "../.."
+		}
+	],
+	"settings": {
+		"workbench.colorCustomizations": {
+			"activityBar.background": "#f9b08b",
+			"titleBar.activeBackground": "#f9b08b",
+			"titleBar.activeForeground": "#000000",
+			"titleBar.inactiveBackground": "#f9b08b",
+			"titleBar.inactiveForeground": "#000000",
+			"titleBar.border": "#f9b08b",
+			"activityBar.foreground": "#000000",
+			"statusBar.background": "#f9b08b",
+			"statusBar.foreground": "#000000",
+			"statusBar.debuggingBackground": "#f9b08b",
+			"statusBar.debuggingForeground": "#000000",
+			"tab.activeBorder": "#f9b08b",
+			"iLoveWorkSpaceColors": true,
+			"iLoveWorkSpaceRandom": false
+		},
+		"files.watcherExclude": {
+			"**/target": true
+		}
+	}
+}
