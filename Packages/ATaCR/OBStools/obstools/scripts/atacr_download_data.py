@@ -600,7 +600,7 @@ def main(args=None):
                 st.select(component='Z')
 
             # # Remove responses
-            print("*   -> Removing responses - Seismic data")
+            print("*   -> Removing responses - Seismic data | UNITS SET TO: " + args.units)
             # sth.remove_response(pre_filt=args.pre_filt, output=args.units)
             try:
                 sth.remove_response(pre_filt=args.pre_filt, output=args.units)
@@ -615,10 +615,15 @@ def main(args=None):
                 # Remove responses
                 # stp.remove_response(pre_filt=args.pre_filt)
                 try:
-                    stp.remove_response(pre_filt=args.pre_filt)
+                    # stp.remove_response(pre_filt=args.pre_filt)
+                    # ---Candidate tweaks:
+                    # stp.remove_response(pre_filt=args.pre_filt,output='DEF',water_level=None)
+                    stp.remove_response(pre_filt=args.pre_filt,output='DEF')
+                    # stp.remove_response(pre_filt=args.pre_filt,water_level=None)
                 except:
                     print("Pressure instrument response removal error. Skipping event")
                     continue
+
                 trP = stp[0]
                 trP = utils.update_stats(
                     trP, sta.latitude, sta.longitude, sta.elevation,
@@ -654,6 +659,5 @@ def main(args=None):
 
 
 if __name__ == "__main__":
-
     # Run main program
     main()

@@ -14,6 +14,7 @@ from obspy.clients.fdsn import Client as _Client
 import os
 from pathlib import Path
 import concurrent
+import datetime
 from concurrent.futures import wait
 import time
 import logging
@@ -797,7 +798,7 @@ def DownloadEvents(catalog,ATaCR_Parent=None,netsta_names=None,Minmag=6.3,Maxmag
                         print(staname + '| S:[' +str(i+1) + '/' + str(len(catalog)) + '] | E:[' + str(j+1) + '/' + str(len(csta.Events)) + '] | ' + str(ev),flush=True)
                         print('---'*20)
                         EventStart = UTCDateTime.strptime(ev,dateformat)
-                        EventEnd = UTCDateTime.strptime(ev,dateformat) + datetime.timedelta(minutes=1)
+                        EventEnd = UTCDateTime.strptime(ev,dateformat) + 60
                         print('Event ' + str(j+1) + '/' + str(len(csta.Events)) + ' | Start -> End : ' + str(EventStart) + ' -> ' + str(EventEnd))
                         if ATaCR_Parent is not None:
                                 os.chdir(ATaCR_Parent)

@@ -421,9 +421,7 @@ def main(args=None):
         print("| ...                                           |")
 
         # Get catalogue using deployment start and end
-        cat = client.get_events(
-            starttime=tstart, endtime=tend,
-            minmagnitude=args.minmag, maxmagnitude=args.maxmag)
+        cat = client.get_events(starttime=tstart, endtime=tend,minmagnitude=args.minmag, maxmagnitude=args.maxmag)
 
         # Total number of events in Catalogue
         nevtT = len(cat)
@@ -668,7 +666,7 @@ def main(args=None):
 
             try:
                 # Remove responses
-                print("*   -> Removing responses - Seismic data")
+                print("*   -> Removing responses - Seismic data| UNITS SET TO: " + args.units)
                 sth.remove_response(pre_filt=args.pre_filt, output=args.units)
             except:
                 print("Seismic IR removal error. Skipping event")
@@ -701,7 +699,11 @@ def main(args=None):
             if "P" in args.channels:
                 stp = st.select(component='H')
                 print("*   -> Removing responses - Pressure data")
-                stp.remove_response(pre_filt=args.pre_filt)
+                # stp.remove_response(pre_filt=args.pre_filt)
+                # ---Candidate tweaks:
+                # stp.remove_response(pre_filt=args.pre_filt,output='DEF',water_level=None)
+                # stp.remove_response(pre_filt=args.pre_filt,output='DEF')
+                stp.remove_response(pre_filt=args.pre_filt,water_level=None)
                 trP = stp[0]
                 trP = utils.update_stats(
                     trP, sta.latitude, sta.longitude, sta.elevation,
