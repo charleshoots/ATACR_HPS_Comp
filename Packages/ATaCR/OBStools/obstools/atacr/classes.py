@@ -388,7 +388,7 @@ class DayNoise(object):
         faxis = int(len(f)/2)
         f = f[0:faxis]
         disp_to_accel = 40*np.log10(2*np.pi*f).reshape(-1,1)
-        disp_to_accel = disp_to_accel - -np.mean(disp_to_accel,where=~np.isinf(disp_to_accel))
+        disp_to_accel[f==0] = 0
 
         psdZ = np.abs(ftZ)**2*2./self.dt
         psdZ = psdZ[0:faxis, :]
@@ -512,6 +512,11 @@ class DayNoise(object):
                 sl_psd1 = 10*np.log10(psd1)
                 sl_psd2 = 10*np.log10(psd2)
 
+        # Convert seismic displacement to acceleration
+        sl_psd1 = sl_psd1 + disp_to_accel
+        sl_psd2 = sl_psd2 + disp_to_accel
+        sl_psdZ = sl_psdZ + disp_to_accel
+
         # Remove mean of the log PSDs
 
         dsl_psdZ = sl_psdZ[ff, :] - np.mean(np.abs(sl_psdZ[ff, :]), axis=0)
@@ -609,10 +614,7 @@ class DayNoise(object):
         self.goodwins = goodwins
 
         if fig_QC:
-            # power = Power(dsl_psd1, dsl_psd2, dsl_psdZ, dsl_psdP) # e.g. '7D.M07A.2011.310.QC.png'
-            power = Power(dsl_psd1+ disp_to_accel[ff], dsl_psd2+ disp_to_accel[ff], dsl_psdZ+ disp_to_accel[ff], dsl_psdP) # e.g. '7D.M07A.2011.310.QC.png'
-            # power = Power(sl_psd1[ff, :] + disp_to_accel[ff], sl_psd2[ff, :] + disp_to_accel[ff], sl_psdZ[ff, :] + disp_to_accel[ff], dsl_psdP) # e.g. '7D.M07A.2011.310.QC.png'
-            
+            power = Power(dsl_psd1, dsl_psd2, dsl_psdZ, dsl_psdP) # e.g. '7D.M07A.2011.310.QC.png'
             plot = plotting.fig_QC(f[ff], power, goodwins, self.ncomp, key=self.key)
 
             # Save or show figure
