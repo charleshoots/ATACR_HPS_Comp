@@ -388,7 +388,7 @@ class DayNoise(object):
         faxis = int(len(f)/2)
         f = f[0:faxis]
         disp_to_accel = 40*np.log10(2*np.pi*f).reshape(-1,1)
-        disp_to_accel[f==0] = 0
+        disp_to_accel[f==0] = 0 #
 
         psdZ = np.abs(ftZ)**2*2./self.dt
         psdZ = psdZ[0:faxis, :]
