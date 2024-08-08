@@ -271,7 +271,8 @@ def get_daylong_arguments(argv=None):
             "Error: invalid --units argument. Choose among " +
             "'DISP', 'VEL', or 'ACC'"))
     if args.pre_filt is None:
-        args.pre_filt = [0.001, 0.005, 45., 50.]
+        # args.pre_filt = [0.001, 0.005, 45., 50.]
+        args.pre_filt = None
     else:
         args.pre_filt = [float(val) for val in args.pre_filt.split(',')]
         args.pre_filt = sorted(args.pre_filt)
@@ -599,30 +600,28 @@ def main(args=None):
             sth = st.select(component='1') + st.select(component='2') + \
                 st.select(component='Z')
 
-            # # Remove responses
-            print("*   -> Removing responses - Seismic data | UNITS SET TO: " + args.units)
-            # sth.remove_response(pre_filt=args.pre_filt, output=args.units)
-            try:
-                sth.remove_response(pre_filt=args.pre_filt, output=args.units)
-            except:
-                print("Seismic instrument response removal error. Skipping event")
-                continue
+            ####### Remove responses
+            # print("*-"*20)
+            # print(args.pre_filt)
+            # print("*-"*20)
+            # print("*   -> Removing responses - Seismic data | UNITS SET TO: " + args.units)
+            # try:
+            #     sth.remove_response(pre_filt=args.pre_filt, output=args.units)
+            # except:
+            #     print("Seismic instrument response removal error. Skipping event")
+            #     continue
 
             # Extract traces - P
             if "P" in args.channels:
                 stp = st.select(component='H')
-                print("*   -> Removing responses - Pressure data")
-                # Remove responses
-                # stp.remove_response(pre_filt=args.pre_filt)
-                try:
-                    # stp.remove_response(pre_filt=args.pre_filt)
-                    # ---Candidate tweaks:
-                    # stp.remove_response(pre_filt=args.pre_filt,output='DEF',water_level=None)
-                    stp.remove_response(pre_filt=args.pre_filt,output='DEF')
-                    # stp.remove_response(pre_filt=args.pre_filt,water_level=None)
-                except:
-                    print("Pressure instrument response removal error. Skipping event")
-                    continue
+                # print("*   -> Removing responses - Pressure data")
+                ####### Remove responses
+                # try:
+                #     # ---Candidate tweaks:
+                #     stp.remove_response(pre_filt=args.pre_filt,output='DEF',water_level=None,plot=str(fileP) + '_IRQC.png')
+                # except:
+                #     print("Pressure instrument response removal error. Skipping event")
+                #     continue
 
                 trP = stp[0]
                 trP = utils.update_stats(
@@ -653,6 +652,11 @@ def main(args=None):
                 tr1.write(str(file1), format='SAC')
                 print('Saving: ' + str(file2))
                 tr2.write(str(file2), format='SAC')
+
+            inventory_file = datapath / (datapath.name + '_inventory.xml')
+            # Writing response files to station inventory
+            if not inventory_file.exists():
+                utils.save_inventory(str(inventory_file),trZ,tr1,tr2,trP)
 
             t1 += dt
             t2 += dt

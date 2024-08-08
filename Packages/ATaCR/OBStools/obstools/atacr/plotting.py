@@ -67,24 +67,39 @@ def fig_QC(f, power, gooddays, ncomp, key=''):
                  'H2 component, Station: '+key,
                  'HZ component, Station: '+key]
     else:
-        sls = [sl_c11, sl_c22, sl_cZZ, sl_cPP]
-        title = ['H1 component, Station: '+key,
+        sls = [sl_cPP, sl_c11, sl_c22, sl_cZZ]
+        title = ['HP component, Station: '+key,
+                 'H1 component, Station: '+key,
                  'H2 component, Station: '+key,
-                 'HZ component, Station: '+key,
-                 'HP component, Station: '+key]
+                 'HZ component, Station: '+key]
 
     # Extract only positive frequencies
     faxis = f > 0
 
     fig = plt.figure(6)
     for i, sl in enumerate(sls):
+        # if (ncomp % 2)==0:
+        #     ax = fig.add_subplot(int(ncomp/2), int(ncomp/2), i+1)
+        # else:
         ax = fig.add_subplot(ncomp, 1, i+1)
         ax.semilogx(f[faxis], sl[:, gooddays][faxis], 'k', lw=0.5)
+        ax.set_xlim(1/150,5)
+        if i==0:
+            ax.set_ylim(top=150)
+            ax.set_ylim(bottom=-100)
+            tick_increment = 50
+        else:
+            ax.set_ylim(top=-40)
+            ax.set_ylim(bottom=-200)
+            tick_increment = 20
         if np.sum(~gooddays) > 0:
-            plt.semilogx(f[faxis], sl[:, ~gooddays][faxis], 'r', lw=0.5)
+            plt.semilogx(f[faxis],sl[:, ~gooddays][faxis], 'r', lw=0.5)
         ax.set_title(title[i], fontdict={'fontsize': 8})
         if i == len(sls)-1:
             plt.xlabel('Frequency (Hz)', fontdict={'fontsize': 8})
+        ax.set_yticks(np.arange(ax.get_ylim()[0],ax.get_ylim()[1],tick_increment))
+    plt.tight_layout()
+    fig.set_size_inches([4,10])
     plt.tight_layout()
 
     return plt

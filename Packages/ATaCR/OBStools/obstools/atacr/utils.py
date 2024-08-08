@@ -32,7 +32,8 @@ import numpy as np
 import fnmatch
 from matplotlib import pyplot as plt
 from obspy.core import read, Stream, Trace, AttribDict, UTCDateTime
-
+from obspy.core.inventory.inventory import read_inventory
+from pathlib import Path
 
 def traceshift(trace, tt):
     """
@@ -189,7 +190,7 @@ def update_stats(tr, stla, stlo, stel, cha, evla=None, evlo=None):
         tr.stats.sac.evlo = evlo
     return tr
 
-def get_data(datapath, tstart, tend):
+def get_data(datapath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],seismic_units="DISP",pressure_units="DEF",pressure_water_level=None):
     """
     Function to grab all available noise data given a path and data time range
 
@@ -218,7 +219,7 @@ def get_data(datapath, tstart, tend):
 
     # Time iterator
     t1 = tstart
-
+    
     # Cycle through each day within time range
     while t1 < tend:
 
@@ -229,17 +230,22 @@ def get_data(datapath, tstart, tend):
         p = datapath.glob('*.*')
         files = [x for x in p if x.is_file()]
         for file in files:
+            inv = read_inventory(Path(str(file)).parent / '*_inventory.xml')
             if fnmatch.fnmatch(str(file), '*' + tstamp + '*1.SAC'):
                 tr = read(str(file))
+                tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
                 trN1.append(tr[0])
             elif fnmatch.fnmatch(str(file), '*' + tstamp + '*2.SAC'):
                 tr = read(str(file))
+                tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
                 trN2.append(tr[0])
             elif fnmatch.fnmatch(str(file), '*' + tstamp + '*Z.SAC'):
                 tr = read(str(file))
+                tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
                 trNZ.append(tr[0])
             elif fnmatch.fnmatch(str(file), '*' + tstamp + '*H.SAC'):
                 tr = read(str(file))
+                tr.remove_response(inventory=inv,pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level)
                 trNP.append(tr[0])
 
         # Increase increment
@@ -269,10 +275,15 @@ def get_data(datapath, tstart, tend):
                 if trN2:
                     trN2.resample(trNP[0].stats.sampling_rate, no_filter=False)
 
+    trN1.remove_response(pre_filt=seismic_pre_filt, output=seismic_units)
+    trN2.remove_response(pre_filt=seismic_pre_filt, output=seismic_units)
+    trNZ.remove_response(pre_filt=seismic_pre_filt, output=seismic_units)
+    trNP.remove_response(pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level)
     return trN1, trN2, trNZ, trNP
 
 
-def get_event(eventpath, tstart, tend):
+def get_event(eventpath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],seismic_units="DISP",pressure_units="DEF",pressure_water_level=None):
+
     """
     Function to grab all available earthquake data given a path and data time
     range
@@ -318,17 +329,22 @@ def get_event(eventpath, tstart, tend):
             p = list(eventpath.glob('*.SAC'))
             files = [x for x in p if x.is_file()]
             for file in files:
+                inv = read_inventory(Path(str(file)).parent / '*_inventory.xml')
                 if fnmatch.fnmatch(str(file), '*' + tstamp + '*1.SAC'):
                     tr = read(str(file))
+                    tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
                     tr1.append(tr[0])
                 elif fnmatch.fnmatch(str(file), '*' + tstamp + '*2.SAC'):
                     tr = read(str(file))
+                    tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
                     tr2.append(tr[0])
                 elif fnmatch.fnmatch(str(file), '*' + tstamp + '*Z.SAC'):
                     tr = read(str(file))
+                    tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
                     trZ.append(tr[0])
                 elif fnmatch.fnmatch(str(file), '*' + tstamp + '*H.SAC'):
                     tr = read(str(file))
+                    tr.remove_response(inventory=inv,pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level)
                     trP.append(tr[0])
 
     # Fill with empty traces if components are not found
@@ -354,6 +370,11 @@ def get_event(eventpath, tstart, tend):
                     tr1.resample(trP[0].stats.sampling_rate, no_filter=False)
                 if tr2:
                     tr2.resample(trP[0].stats.sampling_rate, no_filter=False)
+
+    tr1.remove_response(pre_filt=seismic_pre_filt, output=seismic_units)
+    tr2.remove_response(pre_filt=seismic_pre_filt, output=seismic_units)
+    trZ.remove_response(pre_filt=seismic_pre_filt, output=seismic_units)
+    trP.remove_response(pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level)
 
     return tr1, tr2, trZ, trP
 
@@ -660,7 +681,7 @@ def get_files(datapath, tstart, tend):
         t1 += 3600.*24.
     return [(a,b,c,d) for a,b,c,d in zip(trN1_files,trN2_files,trNZ_files,trNP_files)]
 
-def load_data(files):
+def load_data(files,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],seismic_units="DISP",pressure_units="DEF",pressure_water_level=None):
     """
     Loads four files defined by the tuple, files.
     -CHoots, 2023
@@ -702,10 +723,14 @@ def load_data(files):
                     trN1.resample(trNP[0].stats.sampling_rate, no_filter=False)
                 if trN2:
                     trN2.resample(trNP[0].stats.sampling_rate, no_filter=False)
-
+        inv = read_inventory(Path(str(files[0])).parent / '*_inventory.xml')
+        trN1.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
+        trN2.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
+        trNZ.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
+        trNP.remove_response(inventory=inv,pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level)
         return trN1, trN2, trNZ, trNP
 
-def get_data_generator(datapath, tstart, tend):
+def get_data_generator(datapath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],seismic_units="DISP",pressure_units="DEF",pressure_water_level=None):
     """
     The same as get_data but now factored as a generator object such that the data is never loaded until its index is called.
     Generators can only be iterated, and activated by use in a for loop
@@ -714,4 +739,58 @@ def get_data_generator(datapath, tstart, tend):
     """
     file_list = get_files(datapath, tstart, tend)
     for files in file_list:
-        yield load_data(files)
+        yield load_data(files,seismic_pre_filt=seismic_pre_filt,seismic_units=seismic_units,pressure_units=pressure_units,pressure_pre_filt=pressure_pre_filt,pressure_water_level=pressure_water_level)
+
+def make_inventory(stats,response,instrument_key='sac'):
+    from obspy.core.inventory import Inventory, Network, Station, Channel, Site
+    # We'll first create all the various objects. These strongly follow the
+    # hierarchy of StationXML files.
+    inv = Inventory(
+        # We'll add networks later.
+        # resource_id='station_resource_id',
+        networks=[],
+        # The source should be the id whoever create the file.
+        source="")
+    net = Network(
+        # This is the network code according to the SEED standard.
+        code=stats.network,
+        # A list of stations. We'll add one later.
+        stations=[],
+        description="",
+        # Start-and end dates are optional.
+        start_date=stats.starttime)
+    sta = Station(
+        # This is the station code according to the SEED standard.
+        code=stats.station,
+        latitude=stats[instrument_key].stla,
+        longitude=stats[instrument_key].stlo,
+        elevation=stats[instrument_key].stel*1000,
+        creation_date=stats.starttime,
+        site=Site(name=""))
+    cha = Channel(
+        # This is the channel code according to the SEED standard.
+        code=stats.channel,
+        # This is the location code according to the SEED standard.
+        location_code=stats.location,
+        # Note that these coordinates can differ from the station coordinates.
+        latitude=stats[instrument_key].stla,
+        longitude=stats[instrument_key].stlo,
+        elevation=stats[instrument_key].stel*1000,
+        depth=abs(stats[instrument_key].stel*1000),
+        azimuth=0.0,
+        dip=-90.0,
+        sample_rate=1/stats.delta)
+
+    # Now tie it all together.
+    cha.response = response
+    sta.channels.append(cha)
+    net.stations.append(sta)
+    inv.networks.append(net)
+    return inv
+
+def save_inventory(filename,trZ,tr1,tr2,trP):
+    inventory = make_inventory(trZ.stats,trZ.stats.response)
+    for st in [tr1.copy(),tr2.copy(),trP.copy()]:
+        inventory+= make_inventory(st.stats,st.stats.response)
+    print('...saving station inventory')
+    inventory.write(filename,format="STATIONXML")

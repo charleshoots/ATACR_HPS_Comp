@@ -667,7 +667,7 @@ def main(args=None):
             try:
                 # Remove responses
                 print("*   -> Removing responses - Seismic data| UNITS SET TO: " + args.units)
-                sth.remove_response(pre_filt=args.pre_filt, output=args.units)
+                # #--Moved to get_data-- sth.remove_response(pre_filt=args.pre_filt, output=args.units)
             except:
                 print("Seismic IR removal error. Skipping event")
                 continue
@@ -699,11 +699,7 @@ def main(args=None):
             if "P" in args.channels:
                 stp = st.select(component='H')
                 print("*   -> Removing responses - Pressure data")
-                # stp.remove_response(pre_filt=args.pre_filt)
-                # ---Candidate tweaks:
-                # stp.remove_response(pre_filt=args.pre_filt,output='DEF',water_level=None)
-                # stp.remove_response(pre_filt=args.pre_filt,output='DEF')
-                stp.remove_response(pre_filt=args.pre_filt,water_level=None)
+                # #--Moved to get_data--stp.remove_response(pre_filt=args.pre_filt,output='DEF',water_level=None)
                 trP = stp[0]
                 trP = utils.update_stats(
                     trP, sta.latitude, sta.longitude, sta.elevation,
@@ -714,6 +710,10 @@ def main(args=None):
             else:
                 stp = Stream()
 
+            inventory_file = eventpath / (eventpath.name + '_inventory.xml')
+            # Writing response files to station inventory
+            if not inventory_file.exists():
+                utils.save_inventory(str(inventory_file),trZ,tr1,tr2,trP)
             # # Write out EventStream object
             # eventstream = EventStream(sta, sth, stp)
             # eventstream.save(filename)

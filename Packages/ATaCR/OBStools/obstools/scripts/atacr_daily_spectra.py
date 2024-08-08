@@ -81,9 +81,27 @@ def get_dailyspec_arguments(argv=None):
         "-O", "--overwrite",
         action="store_true",
         dest="ovr",
-        default=False,
+        default=True,
         help="Force the overwriting of pre-existing data. " +
         "[Default False]")
+
+    parser.add_argument(
+        "--units",
+        action="store",
+        type=str,
+        dest="units",
+        default="DISP",
+        help="Choose the output seismogram units. Options are: " +
+        "'DISP', 'VEL', 'ACC'. [Default 'DISP']")
+    parser.add_argument(
+        "--pre-filt",
+        action="store",
+        type=str,
+        dest="pre_filt",
+        default=None,
+        help="Specify four comma-separated corner frequencies " +
+        "(float, in Hz) for deconvolution pre-filter. " +
+        "[Default 0.001,0.005,45.,50.]")
 
     # Event Selection Criteria
     DaysGroup = parser.add_argument_group(
@@ -385,7 +403,21 @@ def main(args=None):
 
         # Get all components
         # trN1, trN2, trNZ, trNP = utils.get_data(datapath, tstart, tend)
-        trace_generator = utils.get_data_generator(datapath, UTCDateTime(tstart), UTCDateTime(tend)) #<--This will save alot of memory
+        # args.pre_filt = [0.001, 0.005, 45.0, 50.0]
+        args.pre_filt = None
+        trace_generator = utils.get_data_generator(datapath, 
+                            UTCDateTime(tstart), UTCDateTime(tend),
+                            seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], 
+                            pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],
+                            seismic_units="DISP",
+                            pressure_units="DEF",
+                            pressure_water_level=None)
+
+        # trace_generator = utils.get_data_generator(datapath, 
+        #                                            UTCDateTime(tstart), 
+        #                                            UTCDateTime(tend),
+        #                                            pre_filt=args.pre_filt,
+        #                                            units=args.units) #<--This will save alot of memory
 
         # Window size
         window = args.window
@@ -398,6 +430,12 @@ def main(args=None):
         # Cycle through available data
         for tr1, tr2, trZ, trP in trace_generator:
             tr1, tr2, trZ, trP = tr1[0],tr2[0],trZ[0],trP[0] #Unwrap the Stream objects
+
+            tr1.detrend('demean')
+            tr2.detrend('demean')
+            trZ.detrend('demean')
+            trP.detrend('demean')
+            
             # Time axis
             taxis = np.arange(0., window, trZ.stats.delta)
 
