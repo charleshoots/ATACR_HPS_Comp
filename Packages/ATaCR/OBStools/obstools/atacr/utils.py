@@ -190,7 +190,7 @@ def update_stats(tr, stla, stlo, stel, cha, evla=None, evlo=None):
         tr.stats.sac.evlo = evlo
     return tr
 
-def get_data(datapath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],seismic_units="DISP",pressure_units="DEF",pressure_water_level=None):
+def get_data(datapath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],seismic_units="DISP",pressure_units="DEF",pressure_water_level=None,seismic_water_level=60):
     """
     Function to grab all available noise data given a path and data time range
 
@@ -233,15 +233,15 @@ def get_data(datapath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0],
             inv = read_inventory(Path(str(file)).parent / '*_inventory.xml')
             if fnmatch.fnmatch(str(file), '*' + tstamp + '*1.SAC'):
                 tr = read(str(file))
-                tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
+                tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units,water_level=seismic_water_level)
                 trN1.append(tr[0])
             elif fnmatch.fnmatch(str(file), '*' + tstamp + '*2.SAC'):
                 tr = read(str(file))
-                tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
+                tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units,water_level=seismic_water_level)
                 trN2.append(tr[0])
             elif fnmatch.fnmatch(str(file), '*' + tstamp + '*Z.SAC'):
                 tr = read(str(file))
-                tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
+                tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units,water_level=seismic_water_level)
                 trNZ.append(tr[0])
             elif fnmatch.fnmatch(str(file), '*' + tstamp + '*H.SAC'):
                 tr = read(str(file))
@@ -274,15 +274,10 @@ def get_data(datapath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0],
                     trN1.resample(trNP[0].stats.sampling_rate, no_filter=False)
                 if trN2:
                     trN2.resample(trNP[0].stats.sampling_rate, no_filter=False)
-
-    trN1.remove_response(pre_filt=seismic_pre_filt, output=seismic_units)
-    trN2.remove_response(pre_filt=seismic_pre_filt, output=seismic_units)
-    trNZ.remove_response(pre_filt=seismic_pre_filt, output=seismic_units)
-    trNP.remove_response(pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level)
     return trN1, trN2, trNZ, trNP
 
 
-def get_event(eventpath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],seismic_units="DISP",pressure_units="DEF",pressure_water_level=None):
+def get_event(eventpath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],seismic_units="DISP",pressure_units="DEF",pressure_water_level=None,seismic_water_level=60):
 
     """
     Function to grab all available earthquake data given a path and data time
@@ -332,15 +327,15 @@ def get_event(eventpath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0
                 inv = read_inventory(Path(str(file)).parent / '*_inventory.xml')
                 if fnmatch.fnmatch(str(file), '*' + tstamp + '*1.SAC'):
                     tr = read(str(file))
-                    tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
+                    tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units,water_level=seismic_water_level)
                     tr1.append(tr[0])
                 elif fnmatch.fnmatch(str(file), '*' + tstamp + '*2.SAC'):
                     tr = read(str(file))
-                    tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
+                    tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units,water_level=seismic_water_level)
                     tr2.append(tr[0])
                 elif fnmatch.fnmatch(str(file), '*' + tstamp + '*Z.SAC'):
                     tr = read(str(file))
-                    tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
+                    tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units,water_level=seismic_water_level)
                     trZ.append(tr[0])
                 elif fnmatch.fnmatch(str(file), '*' + tstamp + '*H.SAC'):
                     tr = read(str(file))
@@ -370,11 +365,6 @@ def get_event(eventpath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0
                     tr1.resample(trP[0].stats.sampling_rate, no_filter=False)
                 if tr2:
                     tr2.resample(trP[0].stats.sampling_rate, no_filter=False)
-
-    tr1.remove_response(pre_filt=seismic_pre_filt, output=seismic_units)
-    tr2.remove_response(pre_filt=seismic_pre_filt, output=seismic_units)
-    trZ.remove_response(pre_filt=seismic_pre_filt, output=seismic_units)
-    trP.remove_response(pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level)
 
     return tr1, tr2, trZ, trP
 
@@ -681,24 +671,30 @@ def get_files(datapath, tstart, tend):
         t1 += 3600.*24.
     return [(a,b,c,d) for a,b,c,d in zip(trN1_files,trN2_files,trNZ_files,trNP_files)]
 
-def load_data(files,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],seismic_units="DISP",pressure_units="DEF",pressure_water_level=None):
+def load_data(files,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],seismic_units="DISP",pressure_units="DEF",pressure_water_level=None,seismic_water_level=60):
     """
     Loads four files defined by the tuple, files.
     -CHoots, 2023
     """
-
+    if not str(files[0])=='DATA/7D.M07A/2012.185..H1.SAC':
+        seismic_units='VEL'
+    inv = read_inventory(Path(str(files[0])).parent / '*_inventory.xml')
     # Define empty streams
     trN1 = Stream()
     trN2 = Stream()
     trNZ = Stream()
     trNP = Stream()
     tr = read(str(files[0]))[0]
+    tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units, water_level=seismic_water_level)
     trN1.append(tr)
     tr = read(str(files[1]))[0]
+    tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units, water_level=seismic_water_level)
     trN2.append(tr)
     tr = read(str(files[2]))[0]
+    tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units, water_level=seismic_water_level)
     trNZ.append(tr)
     tr = read(str(files[3]))[0]
+    tr.remove_response(inventory=inv,pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level)
     trNP.append(tr)
 
     # Fill with empty traces if components are not found
@@ -723,14 +719,14 @@ def load_data(files,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_fi
                     trN1.resample(trNP[0].stats.sampling_rate, no_filter=False)
                 if trN2:
                     trN2.resample(trNP[0].stats.sampling_rate, no_filter=False)
-        inv = read_inventory(Path(str(files[0])).parent / '*_inventory.xml')
-        trN1.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
-        trN2.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
-        trNZ.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units)
-        trNP.remove_response(inventory=inv,pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level)
+        # inv = read_inventory(Path(str(files[0])).parent / '*_inventory.xml')
+        # trN1.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output='VEL', water_level=seismic_water_level)
+        # trN2.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output='VEL', water_level=seismic_water_level)
+        # trNZ.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output='VEL', water_level=seismic_water_level)
+        # trNP.remove_response(inventory=inv,pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level)
         return trN1, trN2, trNZ, trNP
 
-def get_data_generator(datapath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],seismic_units="DISP",pressure_units="DEF",pressure_water_level=None):
+def get_data_generator(datapath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],seismic_units="DISP",pressure_units="DEF",pressure_water_level=60,seismic_water_level=None):
     """
     The same as get_data but now factored as a generator object such that the data is never loaded until its index is called.
     Generators can only be iterated, and activated by use in a for loop
@@ -739,7 +735,7 @@ def get_data_generator(datapath, tstart, tend,seismic_pre_filt=[0.001, 0.005, 45
     """
     file_list = get_files(datapath, tstart, tend)
     for files in file_list:
-        yield load_data(files,seismic_pre_filt=seismic_pre_filt,seismic_units=seismic_units,pressure_units=pressure_units,pressure_pre_filt=pressure_pre_filt,pressure_water_level=pressure_water_level)
+        yield load_data(files,seismic_pre_filt=seismic_pre_filt,seismic_units=seismic_units,pressure_units=pressure_units,pressure_pre_filt=pressure_pre_filt,pressure_water_level=pressure_water_level,seismic_water_level=seismic_water_level)
 
 def make_inventory(stats,response,instrument_key='sac'):
     from obspy.core.inventory import Inventory, Network, Station, Channel, Site

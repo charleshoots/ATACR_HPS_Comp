@@ -403,16 +403,54 @@ def main(args=None):
 
         # Get all components
         # trN1, trN2, trNZ, trNP = utils.get_data(datapath, tstart, tend)
-        # args.pre_filt = [0.001, 0.005, 45.0, 50.0]
-        args.pre_filt = None
+
+        # # -----------------------------------------------------------------
+        # # -----------------------------------------------------------------<<<<<ORIGINAL>>>>>
+        print('< ORIGINAL >-' * 500)
         trace_generator = utils.get_data_generator(datapath, 
                             UTCDateTime(tstart), UTCDateTime(tend),
-                            seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], 
-                            pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],
                             seismic_units="DISP",
-                            pressure_units="DEF",
-                            pressure_water_level=None)
-
+                            seismic_pre_filt=None,
+                            seismic_water_level=60,
+                            pressure_units="VEL", # ATaCR, by default, requests velocity output for pressure. Was this intended?
+                            pressure_pre_filt=None,
+                            pressure_water_level=60)
+        # # -----------------------------------------------------------------
+        # [0.001, 0.005, 45., 50.]
+        # # -----------------------------------------------------------------<<<<<TEST-ONE>>>>>
+        # print('-< TEST ONE >-' * 500)
+        # trace_generator = utils.get_data_generator(datapath, 
+        #                     UTCDateTime(tstart), UTCDateTime(tend),
+        #                     seismic_units="DISP",
+        #                     seismic_pre_filt=[0.001, 0.005, 45.0, 50.0],
+        #                     seismic_water_level=60,
+        #                     pressure_units="DEF",
+        #                     pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],
+        #                     pressure_water_level=None)
+        # # -----------------------------------------------------------------
+        # # -----------------------------------------------------------------<<<<<TEST-TWO>>>>>
+        # print('-< TEST TWO >-' * 500)
+        # trace_generator = utils.get_data_generator(datapath, 
+        #                     UTCDateTime(tstart), UTCDateTime(tend),
+        #                     seismic_units="DISP",
+        #                     seismic_pre_filt=[0.001, 0.005, 45.0, 50.0],
+        #                     seismic_water_level=60,
+        #                     pressure_units="DEF",
+        #                     pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],
+        #                     pressure_water_level=60)
+        # # -----------------------------------------------------------------
+        # # -----------------------------------------------------------------<<<<<TEST-THREE>>>>>
+        # print('-< TEST THREE >-' * 500)
+        # trace_generator = utils.get_data_generator(datapath, 
+        #                     UTCDateTime(tstart), UTCDateTime(tend),
+        #                     seismic_units="DISP",
+        #                     seismic_pre_filt=[0.001, 0.005, 45.0, 50.0],
+        #                     seismic_water_level=60,
+        #                     pressure_units="VEL",
+        #                     pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],
+        #                     pressure_water_level=None)
+        # # -----------------------------------------------------------------
+        # # -----------------------------------------------------------------
         # trace_generator = utils.get_data_generator(datapath, 
         #                                            UTCDateTime(tstart), 
         #                                            UTCDateTime(tend),

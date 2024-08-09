@@ -489,15 +489,15 @@ class DayNoise(object):
             sl_psd2 = None
             sl_psdZ = None
             sl_psdP = None
-            sl_psdZ = utils.smooth(10*np.log10(psdZ, where=(psdZ > 0.)), 50, axis=0)
+            sl_psdZ = utils.smooth(10*np.log10(psdZ,where=(psdZ > 0.)), 50, axis=0)
             if self.ncomp == 2 or self.ncomp == 4:
                 sl_psdP = utils.smooth(
-                    10*np.log10(psdP), 50, axis=0) #where=(psdP > 0.) #<--This should never happen as you take the abs and square above. If it does, and you need this. Something is wrong with the data or psd.
+                    10*np.log10(psdP,where=(psdP > 0.)), 50, axis=0)
             if self.ncomp == 3 or self.ncomp == 4:
                 sl_psd1 = utils.smooth(
-                    10*np.log10(psd1), 50, axis=0) # , where=(psd1 > 0.)
+                    10*np.log10(psd1,where=(psd1 > 0.)), 50, axis=0)
                 sl_psd2 = utils.smooth(
-                    10*np.log10(psd2), 50, axis=0) # , where=(psd2 > 0.)
+                    10*np.log10(psd2,where=(psd2 > 0.)), 50, axis=0)
 
         else:
             # Take the log of the PSDs
@@ -512,10 +512,10 @@ class DayNoise(object):
                 sl_psd1 = 10*np.log10(psd1)
                 sl_psd2 = 10*np.log10(psd2)
 
-        # Convert seismic displacement to acceleration
-        sl_psd1 = sl_psd1 + disp_to_accel
-        sl_psd2 = sl_psd2 + disp_to_accel
-        sl_psdZ = sl_psdZ + disp_to_accel
+        # #Convert seismic displacement to acceleration
+        # sl_psd1 = sl_psd1 + disp_to_accel
+        # sl_psd2 = sl_psd2 + disp_to_accel
+        # sl_psdZ = sl_psdZ + disp_to_accel
 
         # Remove mean of the log PSDs
 

@@ -27,6 +27,13 @@ import ObsQA
 from comp_tools import *
 
 
+
+# inv = read_inventory(Path(str(files[0])).parent / '*_inventory.xml')
+# trN1.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units, water_level=seismic_water_level)
+# trN2.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units, water_level=seismic_water_level)
+# trNZ.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units, water_level=seismic_water_level)
+# trNP.remove_response(inventory=inv,pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level)
+
 # --------------------------------------------------------------------------------------------------
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # --------------------------------------------------------------------------------------------------
@@ -93,7 +100,10 @@ days = ['2011.310',
  '2012.104',
  '2012.121',
  '2012.153',
- '2012.164']
+ '2012.164',
+ '2012.185']
+
+# days = ['2012.185']
 
 # days = ['2012.153',
 #  '2012.175',
@@ -164,6 +174,16 @@ days = [UTCDateTime.strptime(d,'%Y.%j') for d in days]
     #         self.daylist.extend(daylist)
     #         self.station_depth = self.daylist[0].station_depth
 
+## -------------------------------------------------------
+## Step-1: Station Metadata. Step a0 in ML-ATaCR. Always run this.
+## Step-2: Download event data. Step a3 in ML-ATaCR.
+## Step-3: Download day data. Step a2 in ML-ATaCR.
+## Step-4: Daily Spectra. Step b1 in ML-ATaCR.
+## Step-5: Clean and Average Daily Spectra. Step b2 in ML-ATaCR.
+## Step-6: Calculate transfer functions. Step b3 ML-ATaCR.
+## Step-7: Correct events. Step b4 in ML-ATaCR.
+## ===============================================================================
+## ===============================================================================
 
 cat = catalog.copy()
 # display(cat)

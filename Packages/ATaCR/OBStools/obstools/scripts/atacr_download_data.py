@@ -271,8 +271,8 @@ def get_daylong_arguments(argv=None):
             "Error: invalid --units argument. Choose among " +
             "'DISP', 'VEL', or 'ACC'"))
     if args.pre_filt is None:
-        # args.pre_filt = [0.001, 0.005, 45., 50.]
-        args.pre_filt = None
+        args.pre_filt = [0.001, 0.005, 45., 50.]
+        # args.pre_filt = None
     else:
         args.pre_filt = [float(val) for val in args.pre_filt.split(',')]
         args.pre_filt = sorted(args.pre_filt)
@@ -604,24 +604,14 @@ def main(args=None):
             # print("*-"*20)
             # print(args.pre_filt)
             # print("*-"*20)
-            # print("*   -> Removing responses - Seismic data | UNITS SET TO: " + args.units)
-            # try:
-            #     sth.remove_response(pre_filt=args.pre_filt, output=args.units)
-            # except:
-            #     print("Seismic instrument response removal error. Skipping event")
-            #     continue
+            print("*   -> Removing responses - Seismic data | UNITS SET TO: " + args.units)
+            # sth.remove_response(pre_filt=args.pre_filt, output=args.units)
 
             # Extract traces - P
             if "P" in args.channels:
                 stp = st.select(component='H')
-                # print("*   -> Removing responses - Pressure data")
-                ####### Remove responses
-                # try:
-                #     # ---Candidate tweaks:
-                #     stp.remove_response(pre_filt=args.pre_filt,output='DEF',water_level=None,plot=str(fileP) + '_IRQC.png')
-                # except:
-                #     print("Pressure instrument response removal error. Skipping event")
-                #     continue
+                print("*   -> Removing responses - Pressure data")
+                # stp.remove_response(pre_filt=args.pre_filt)
 
                 trP = stp[0]
                 trP = utils.update_stats(
