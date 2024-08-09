@@ -406,27 +406,27 @@ def main(args=None):
 
         # # -----------------------------------------------------------------
         # # -----------------------------------------------------------------<<<<<ORIGINAL>>>>>
-        print('< ORIGINAL >-' * 500)
-        trace_generator = utils.get_data_generator(datapath, 
-                            UTCDateTime(tstart), UTCDateTime(tend),
-                            seismic_units="DISP",
-                            seismic_pre_filt=None,
-                            seismic_water_level=60,
-                            pressure_units="VEL", # ATaCR, by default, requests velocity output for pressure. Was this intended?
-                            pressure_pre_filt=None,
-                            pressure_water_level=60)
-        # # -----------------------------------------------------------------
-        # [0.001, 0.005, 45., 50.]
-        # # -----------------------------------------------------------------<<<<<TEST-ONE>>>>>
-        # print('-< TEST ONE >-' * 500)
+        # print('< ORIGINAL >-' * 500)
         # trace_generator = utils.get_data_generator(datapath, 
         #                     UTCDateTime(tstart), UTCDateTime(tend),
         #                     seismic_units="DISP",
-        #                     seismic_pre_filt=[0.001, 0.005, 45.0, 50.0],
+        #                     seismic_pre_filt=None,
         #                     seismic_water_level=60,
-        #                     pressure_units="DEF",
-        #                     pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],
-        #                     pressure_water_level=None)
+        #                     pressure_units="VEL", # ATaCR, by default, requests velocity output for pressure. Was this intended?
+        #                     pressure_pre_filt=None,
+        #                     pressure_water_level=60)
+        # # -----------------------------------------------------------------
+        # [0.001, 0.005, 45., 50.]
+        # # -----------------------------------------------------------------<<<<<TEST-ONE>>>>>
+        print('-< TEST ONE >-' * 500)
+        trace_generator = utils.get_data_generator(datapath, 
+                            UTCDateTime(tstart), UTCDateTime(tend),
+                            seismic_units="DISP",
+                            seismic_pre_filt=[0.001, 0.005, 45.0, 50.0],
+                            seismic_water_level=None,
+                            pressure_units="DEF",
+                            pressure_pre_filt=[0.001, 0.005, 45.0, 50.0],
+                            pressure_water_level=None)
         # # -----------------------------------------------------------------
         # # -----------------------------------------------------------------<<<<<TEST-TWO>>>>>
         # print('-< TEST TWO >-' * 500)
@@ -472,7 +472,7 @@ def main(args=None):
             tr1.detrend('demean')
             tr2.detrend('demean')
             trZ.detrend('demean')
-            trP.detrend('demean')
+            # trP.detrend('demean')
             
             # Time axis
             taxis = np.arange(0., window, trZ.stats.delta)

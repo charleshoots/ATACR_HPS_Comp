@@ -513,9 +513,9 @@ class DayNoise(object):
                 sl_psd2 = 10*np.log10(psd2)
 
         # #Convert seismic displacement to acceleration
-        # sl_psd1 = sl_psd1 + disp_to_accel
-        # sl_psd2 = sl_psd2 + disp_to_accel
-        # sl_psdZ = sl_psdZ + disp_to_accel
+        sl_psd1 = sl_psd1 + disp_to_accel
+        sl_psd2 = sl_psd2 + disp_to_accel
+        sl_psdZ = sl_psdZ + disp_to_accel
 
         # Remove mean of the log PSDs
 

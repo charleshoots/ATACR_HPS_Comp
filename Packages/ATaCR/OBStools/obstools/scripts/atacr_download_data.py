@@ -578,8 +578,6 @@ def main(args=None):
                 st = sth + stp
 
             # Detrend, filter
-            st.detrend('demean')
-            st.detrend('linear')
             st.filter(
                 'lowpass', freq=0.5*args.new_sampling_rate,
                 corners=2, zerophase=True)
@@ -599,7 +597,7 @@ def main(args=None):
 
             sth = st.select(component='1') + st.select(component='2') + \
                 st.select(component='Z')
-
+            sth.detrend('demean')
             ####### Remove responses
             # print("*-"*20)
             # print(args.pre_filt)

@@ -676,8 +676,6 @@ def load_data(files,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_fi
     Loads four files defined by the tuple, files.
     -CHoots, 2023
     """
-    if not str(files[0])=='DATA/7D.M07A/2012.185..H1.SAC':
-        seismic_units='VEL'
     inv = read_inventory(Path(str(files[0])).parent / '*_inventory.xml')
     # Define empty streams
     trN1 = Stream()
@@ -694,7 +692,7 @@ def load_data(files,seismic_pre_filt=[0.001, 0.005, 45.0, 50.0], pressure_pre_fi
     tr.remove_response(inventory=inv,pre_filt=seismic_pre_filt, output=seismic_units, water_level=seismic_water_level)
     trNZ.append(tr)
     tr = read(str(files[3]))[0]
-    tr.remove_response(inventory=inv,pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level)
+    tr.remove_response(inventory=inv,pre_filt=pressure_pre_filt,output=pressure_units,water_level=pressure_water_level,zero_mean=False)
     trNP.append(tr)
 
     # Fill with empty traces if components are not found
